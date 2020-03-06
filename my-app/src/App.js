@@ -1,41 +1,60 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import "./app.scss";
 import Header from "./component/header";
 import Headline from "./component/headline";
-import SharedButton from "./component/button"
-import ListItem from "./component/listItem"
-import {connect} from "react-redux"
-import {fetchPosts} from "./actions"
+import SharedButton from "./component/button";
+import ListItem from "./component/listItem";
+import { connect } from "react-redux";
+import { fetchPosts } from "./actions";
 
-const tempArr = [{
-  fName: "Joe",
-  lName: "Bloggs",
-  email: "joeblogss@gmail.com",
-  age: 25,
-  onlineStatus: true
-}]
+const tempArr = [
+  {
+    fName: "Joe",
+    lName: "Bloggs",
+    email: "joeblogss@gmail.com",
+    age: 25,
+    onlineStatus: true
+  }
+];
+
+const initalState = {
+  hideBtn: false
+};
 
 class App extends Component {
-
-
-  constructor(props){
-    super(props)
-    this.fetch = this.fetch.bind(this)
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...initalState
+    };
+    this.fetch = this.fetch.bind(this);
   }
 
-
-  fetch(){
-    this.props.fetchPosts()
+  fetch() {
+    this.props.fetchPosts();
+    this.exampleMethod_updatesState();
   }
-  
+
+  exampleMethod_updatesState() {
+    const { hideBtn } = this.state;
+    this.setState({
+      hideBtn: !hideBtn
+    });
+  }
+
+  exampleMethod_returnsValue(number){
+    return number + 1
+  }
+
 
   render() {
-    const {posts} = this.props
+    const { posts } = this.props;
+    const { hideBtn } = this.state;
 
     const configButton = {
       buttonText: "Get posts",
       emitEvent: this.fetch
-    }
+    };
 
     return (
       <div className="App" data-test="appComponent">
@@ -46,21 +65,20 @@ class App extends Component {
             description="Click the button to render posts"
             tempArr={tempArr}
           />
-          <SharedButton {...configButton} />
-          {posts.length > 0 &&
-          <div>
-            {posts.map((post, index) => {
-              const {title, body} = post
-              const configListItem = {
-                title,
-                description: body
-              }
-              return(
-                <ListItem key={index} {...configListItem}/>
-              )
-            })}
-          </div>
-          }
+          {!hideBtn && <SharedButton {...configButton} />}
+
+          {posts.length > 0 && (
+            <div>
+              {posts.map((post, index) => {
+                const { title, body } = post;
+                const configListItem = {
+                  title,
+                  description: body
+                };
+                return <ListItem key={index} {...configListItem} />;
+              })}
+            </div>
+          )}
         </section>
       </div>
     );
@@ -68,9 +86,9 @@ class App extends Component {
 }
 
 const mapStateToProps = state => {
-  return{
+  return {
     posts: state.posts
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, {fetchPosts})(App);
+export default connect(mapStateToProps, { fetchPosts })(App);
